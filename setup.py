@@ -29,4 +29,5 @@ if __name__ == "__main__":
         license=LICENSE,
         version=VERSION,
         download_url=DOWNLOAD_URL,
+        packages=["cregg", "cregg.tests"],
     )
