@@ -104,7 +104,7 @@ class DataLog(object):
         self.fname = fname_base + ".csv"
         archive_old_version(self.fname)
 
-        # Save the parameters to
+        # Save the parameters to json with a similar base filename
         p.to_json(fname_base)
 
         # Write the column header
@@ -180,25 +180,30 @@ class WaitText(object):
 
 class PresentationLoop(object):
     """Context manager for the main loop of an experiment."""
-    def __init__(self, win, log=None, exit_func=None, fileobj=None):
+    def __init__(self, win, p=None, log=None, fix=None,
+                 exit_func=None, fileobj=None):
+
+        self.p = p
         self.win = win
-        if log is not None:
-            self.log = log
-        if exit_func is not None:
-            self.exit_func = exit_func
-        if fileobj is not None:
-            self.fileobj = fileobj
+        self.fix = fix
+        self.log = log
+        self.exit_func = exit_func
+        self.fileobj = fileobj
 
     def __enter__(self):
 
-        pass
+        if self.p.fmri:
+            wait_for_trigger(self.win, self.p)
+            self.fix.draw()
+            self.win.flip()
+            wait_check_quit(self.p.equilibrium_trs * self.p.tr)
 
     def __exit__(self, type, value, traceback):
 
         self.win.close()
-        if hasattr(self, "fileobj"):
+        if self.fileobj is not None:
             self.fileobj.close()
-        if hasattr(self, "exit_func"):
+        if self.exit_func is not None:
             self.exit_func(self.log)
 
 
@@ -217,7 +222,8 @@ def archive_old_version(fname):
 def git_hash():
     """Get the commit hash for the HEAD commmit."""
     out = subprocess.Popen("git rev-parse HEAD",
-                           stdout=subprocess.PIPE, shell=True)
+                           stdout=subprocess.PIPE,
+                           shell=True)
     hash = out.communicate()[0].strip()
     return hash
 
@@ -262,8 +268,7 @@ def wait_for_trigger(win, params):
     # Here's where we expect pulses
     wait = True
     while wait:
-        trigger_keys = ["5", "t"]
-        listen_keys = trigger_keys + list(params.quit_keys)
+        listen_keys = list(params.trigger_keys) + list(params.quit_keys)
         for key in event.getKeys(keyList=listen_keys):
             if key in params.quit_keys:
                 core.quit()
@@ -282,10 +287,12 @@ def precise_wait(win, clock, end_time, stim):
         now = clock.getTime()
 
 
-def wait_and_listen(listen_for):
+def wait_and_listen(listen_for, sleep_time=None):
     """Do nothing until a specific key is pressed."""
     should_wait = True
     while should_wait:
+        if sleep_time is not None:
+            core.wait(sleep_time)
         for key in event.getKeys():
             if key == listen_for:
                 should_wait = False
