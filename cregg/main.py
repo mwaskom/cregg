@@ -353,11 +353,13 @@ def subject_specific_state(subject):
 
 
 def launch_window(params):
-    """Open up a presentation window."""
+    """Open up a presentation window and measure the refresh rate."""
     calib.monitorFolder = "./calib"
     mon = calib.Monitor(params.monitor_name)
     m = WindowInfo(params, mon)
     win = visual.Window(**m.window_kwargs)
     win.setRecordFrameIntervals(True)
     logging.console.setLevel(logging.CRITICAL)
+    flip_time, _, _ = visual.getMsPerFrame(win)
+    win.refresh_hz = 1000 / flip_time
     return win
