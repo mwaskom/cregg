@@ -279,7 +279,7 @@ def wait_for_trigger(win, params):
 
 def precise_wait(win, clock, end_time, stim):
     """Wait with precision controlled by screen refreshes."""
-    end_time -= 1 / win.refresh_rate
+    end_time -= 1 / win.refresh_hz
     now = clock.getTime()
     while now < end_time:
         stim.draw()
