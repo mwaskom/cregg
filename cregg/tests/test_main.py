@@ -1,7 +1,6 @@
 from __future__ import division
 import os
 import json
-import time
 import nose.tools as nt
 from .. import main 
 
@@ -17,7 +16,6 @@ def test_params():
         p.set_by_cmdline(["-s", "cj", "-debug"])
         assert p.subject == "cj"
         assert p.debug
-        assert p.time < time.asctime()
         assert not p.fmri
 
         p.to_json("params.json")
@@ -40,3 +38,13 @@ def test_categorical():
 
     sample = main.categorical([1, 0])
     nt.assert_equal(sample, 0)
+
+
+def test_subject_state():
+
+    subj = "cj"
+    state1 = main.subject_specific_state(subj)
+    state2 = main.subject_specific_state(subj)
+    assert state1.rand() == state2.rand()
+    state3 = main.subject_specific_state("danny")
+    assert state1.rand() != state3.rand()
