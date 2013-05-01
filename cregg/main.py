@@ -57,7 +57,9 @@ class Params(object):
 
         # Add additional arguments by experiment
         try:
-            parser = self.param_module.add_cmdline_params(parser)
+            func_name = self.exp_name + "_cmdline"
+            arg_func = getattr(self.param_module, func_name)
+            arg_func(parser)
         except AttributeError:
             pass
 
@@ -72,6 +74,12 @@ class Params(object):
 
         if hasattr(self, "dummy_trs") and not self.fmri:
             self.dummy_trs = 1
+
+        if self.fmri and hasattr(self, "fmri_monitor_name"):
+            self.monitor_name = self.fmri_monitor_name
+
+        if self.fmri and hasattr(self, "fmri_resp_keys"):
+            self.resp_keys = self.fmri_resp_keys
 
     def to_text_header(self, fid):
         """Save the parameters to a text file."""
@@ -139,6 +147,7 @@ class WindowInfo(object):
                     fullscr=params.full_screen,
                     allowGUI=not params.full_screen,
                     color=params.window_color,
+                    screen=params.screen_number,
                     size=size,
                     monitor=monitor)
 
