@@ -78,6 +78,9 @@ class Params(object):
         if self.fmri and hasattr(self, "fmri_monitor_name"):
             self.monitor_name = self.fmri_monitor_name
 
+        if self.fmri and hasattr(self, "fmri_screen_number"):
+            self.screen_number = self.fmri_screen_number
+
         if self.fmri and hasattr(self, "fmri_resp_keys"):
             self.resp_keys = self.fmri_resp_keys
 
