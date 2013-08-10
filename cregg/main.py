@@ -51,6 +51,7 @@ class Params(object):
         # Create the parser, set default args
         parser = argparse.ArgumentParser()
         parser.add_argument("-subject", default="test")
+        parser.add_argument("-cbid")
         parser.add_argument("-run", type=int, default=1)
         parser.add_argument("-fmri", action="store_true")
         parser.add_argument("-debug", action="store_true")
