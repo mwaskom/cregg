@@ -89,7 +89,7 @@ class Params(object):
         """Save the parameters to a text file."""
         for key, val in self.__dict__.items():
             if not key.startswith("_"):
-                fid.write("# %s : %s \n" % (key, val))
+                fid.write("# {} : {} \n".format(key, val))
 
     def to_json(self, fname):
         """Save the parameters to a .json"""
@@ -112,7 +112,7 @@ class DataLog(object):
         self.columns = columns
 
         # Figure out the name and clear out old files
-        fname_base = p.log_base % dict(subject=p.subject, run=p.run)
+        fname_base = p.log_base.format(subject=p.subject, run=p.run)
         self.fname = fname_base + ".csv"
         archive_old_version(self.fname)
 
@@ -144,7 +144,7 @@ class WindowInfo(object):
         try:
             minfo = getattr(mod, params.monitor_name.replace("-", "_"))
         except IndexError:
-            sys.exit("Monitor name '%s' not found in monitors.py")
+            sys.exit("Monitor not found in monitors.py")
 
         size = minfo["size"] if params.full_screen else (800, 600)
         info = dict(units=params.monitor_units,
@@ -228,7 +228,7 @@ def archive_old_version(fname):
     base, ext = os.path.splitext(fname)
     n_existing = len(glob(base + "_*" + ext))
     n_current = n_existing + 1
-    new_fname = "%s_%d%s" % (base, n_current, ext)
+    new_fname = "{}_{:d}{}".format(base, n_current, ext)
     os.rename(fname, new_fname)
 
 
@@ -353,7 +353,7 @@ def load_design_csv(params):
     state = subject_specific_state(params.subject)
     choices = list(letters[:params.n_designs])
     params.sched_id = state.permutation(choices)[params.run - 1]
-    design_file = params.design_template % params.sched_id
+    design_file = params.design_template.format(params.sched_id)
     design = pd.read_csv(design_file, index_col="trial")
     return design
 
