@@ -358,9 +358,10 @@ def load_design_csv(params):
     return design
 
 
-def subject_specific_state(subject):
+def subject_specific_state(subject, cbid=None):
     """Obtain a numpy random state that is consistent for a subject ID."""
-    state = RandomState(abs(hash(subject)))
+    subject = subject if cbid is None else cbid
+    state = RandomState(sum(map(ord, subject)))
     return state
 
 
