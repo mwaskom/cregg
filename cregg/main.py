@@ -11,6 +11,7 @@ from glob import glob
 from string import letters
 from math import floor
 from subprocess import call
+from pprint import pformat
 import numpy as np
 import pandas as pd
 from numpy.random import RandomState
@@ -45,6 +46,10 @@ class Params(object):
 
         self.time = time.asctime()
         self.git_hash = git_hash()
+
+    def __repr__(self):
+
+        return pformat(self.__dict__)
 
     def set_by_cmdline(self, arglist):
         """Get runtime parameters off the commandline."""
