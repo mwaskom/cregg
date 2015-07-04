@@ -167,8 +167,8 @@ class WindowInfo(object):
 
 class WaitText(object):
     """A class for showing text on the screen until a key is pressed. """
-    def __init__(self, win, text="Press a key to continue",
-                 advance_keys=None, quit_keys=None, **kwargs):
+    def __init__(self, win, lines=("Press a key to continue"),
+                 advance_keys=None, quit_keys=None, height=.5, **kwargs):
         """Set the text stimulus information."""
         self.win = win
         if advance_keys is None:
@@ -178,7 +178,15 @@ class WaitText(object):
             quit_keys = ["escape", "q"]
         self.quit_keys = quit_keys
         self.listen_keys = quit_keys + advance_keys
-        self.text = visual.TextStim(win, text=text, **kwargs)
+        kwargs["height"] = height
+
+        n = len(lines)
+        heights = (np.arange(n)[::-1] - (n / 2 - .5)) * height
+        texts = []
+        for line, y in zip(lines, heights):
+            text = visual.TextStim(win, line, pos=(0, y), **kwargs)
+            texts.append(text)
+        self.texts = texts
 
     def draw(self, duration=np.inf):
         """Dislpay text until a key is pressed or until duration elapses."""
@@ -187,7 +195,8 @@ class WaitText(object):
         # Keep going for the duration
         while t < duration:
             t = clock.getTime()
-            self.text.draw()
+            for text in self.texts:
+                text.draw()
             self.win.flip()
             for key in event.getKeys(keyList=self.listen_keys):
                 if key in self.quit_keys:
