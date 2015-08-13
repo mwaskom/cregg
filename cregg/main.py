@@ -139,7 +139,7 @@ class DataLog(object):
 
 class WindowInfo(object):
     """Container for monitor information."""
-    def __init__(self, params, monitor):
+    def __init__(self, params):
         """Extracts monitor information from params file and monitors.py."""
         try:
             mod = __import__("monitors")
@@ -152,6 +152,12 @@ class WindowInfo(object):
             sys.exit("Monitor not found in monitors.py")
 
         size = minfo["size"] if params.full_screen else (800, 600)
+
+        monitor = calib.Monitor(minfo["name"],
+                                minfo["width"],
+                                minfo["distance"])
+        monitor.setSizePix(minfo["size"])
+
         info = dict(units=params.monitor_units,
                     fullscr=params.full_screen,
                     allowGUI=not params.full_screen,
@@ -381,9 +387,7 @@ def subject_specific_state(subject, cbid=None):
 
 def launch_window(params):
     """Open up a presentation window and measure the refresh rate."""
-    calib.monitorFolder = "./calib"
-    mon = calib.Monitor(params.monitor_name)
-    m = WindowInfo(params, mon)
+    m = WindowInfo(params)
     win = visual.Window(**m.window_kwargs)
     win.setRecordFrameIntervals(True)
     logging.console.setLevel(logging.CRITICAL)
