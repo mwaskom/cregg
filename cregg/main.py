@@ -51,6 +51,10 @@ class Params(object):
 
         return pformat(self.__dict__)
 
+    def __getitem__(self, key):
+
+        return getattr(self, key)
+
     def set_by_cmdline(self, arglist):
         """Get runtime parameters off the commandline."""
         # Create the parser, set default args
