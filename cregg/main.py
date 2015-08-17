@@ -198,21 +198,21 @@ class WaitText(object):
             texts.append(text)
         self.texts = texts
 
-    def draw(self, duration=np.inf):
+    def draw(self, duration=np.inf, sleep_time=.2):
         """Dislpay text until a key is pressed or until duration elapses."""
         clock = core.Clock()
+        for text in self.texts:
+            text.draw()
+        self.win.flip()
         t = 0
-        # Keep going for the duration
         while t < duration:
             t = clock.getTime()
-            for text in self.texts:
-                text.draw()
-            self.win.flip()
             for key in event.getKeys(keyList=self.listen_keys):
                 if key in self.quit_keys:
                     core.quit()
                 elif key in self.advance_keys:
                     return
+            time.sleep(sleep_time)
 
 
 class PresentationLoop(object):
