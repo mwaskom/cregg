@@ -64,6 +64,7 @@ class Params(object):
         parser.add_argument("-run", type=int, default=1)
         parser.add_argument("-fmri", action="store_true")
         parser.add_argument("-debug", action="store_true")
+        parser.add_argument("-nolog", action="store_true")
 
         # Add additional arguments by experiment
         try:
@@ -120,6 +121,11 @@ class DataLog(object):
         self.p = p
         self.columns = columns
 
+        if not p.nolog:
+            self.init_log()
+
+    def init_log(self):
+
         # Figure out the name and clear out old files
         fname_base = p.log_base.format(subject=p.subject, run=p.run)
         self.fname = fname_base + ".csv"
@@ -129,7 +135,7 @@ class DataLog(object):
         p.to_json(fname_base)
 
         # Write the column header
-        column_string = ",".join(map(str, columns)) + "\n"
+        column_string = ",".join(map(str, self.columns)) + "\n"
         with open(self.fname, "w") as fid:
             fid.write(column_string)
 
@@ -137,8 +143,9 @@ class DataLog(object):
         """Add a line of data based on a dictionary and stored columns."""
         data_list = [str(data_dict.get(col, None)) for col in self.columns]
         data_str = ",".join(data_list) + "\n"
-        with open(self.fname, "a") as fid:
-            fid.write(data_str)
+        if not self.p.nolog:
+            with open(self.fname, "a") as fid:
+                fid.write(data_str)
 
 
 class WindowInfo(object):
