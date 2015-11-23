@@ -177,6 +177,9 @@ class WindowInfo(object):
                     size=size,
                     monitor=monitor)
 
+        if "refresh_hz" in minfo:
+            self.refresh_hz = minfo["refresh_hz"]
+
         self.name = params.monitor_name
         self.__dict__.update(info)
         self.window_kwargs = info
@@ -400,8 +403,11 @@ def launch_window(params):
     """Open up a presentation window and measure the refresh rate."""
     m = WindowInfo(params)
     win = visual.Window(**m.window_kwargs)
-    win.setRecordFrameIntervals(True)
-    logging.console.setLevel(logging.CRITICAL)
-    flip_time, _, _ = visual.getMsPerFrame(win)
-    win.refresh_hz = 1000 / flip_time
+    try:
+        win.refresh_hz = m.refresh_hz
+    except AttributeError:
+        win.setRecordFrameIntervals(True)
+        logging.console.setLevel(logging.CRITICAL)
+        flip_time, _, _ = visual.getMsPerFrame(win)
+        win.refresh_hz = 1000 / flip_time
     return win
