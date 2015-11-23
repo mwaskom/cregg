@@ -122,9 +122,9 @@ class DataLog(object):
         self.columns = columns
 
         if not p.nolog:
-            self.init_log()
+            self.init_log(p)
 
-    def init_log(self):
+    def init_log(self, p):
 
         # Figure out the name and clear out old files
         fname_base = p.log_base.format(subject=p.subject, run=p.run)
