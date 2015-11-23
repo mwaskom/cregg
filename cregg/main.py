@@ -225,6 +225,83 @@ class WaitText(object):
             time.sleep(sleep_time)
 
 
+class Fixation(object):
+    """Simple fixation point with color as a property."""
+    def __init__(self, win, p):
+
+        self.dot = visual.Circle(win, interpolate=True,
+                                 fillColor=p.fix_iti_color,
+                                 lineColor=p.fix_iti_color,
+                                 size=p.fix_size)
+
+        self._color = p.fix_iti_color
+
+    @property
+    def color(self):
+
+        return self._color
+
+    @color.setter  # pylint: disable-msg=E0102r
+    def color(self, color):
+
+        self._color = color
+        self.dot.setFillColor(color)
+        self.dot.setLineColor(color)
+
+    def draw(self):
+
+        self.dot.draw()
+
+
+class ProgressBar(object):
+    """Progress bar to show how far one is in an experiment."""
+    def __init__(self, win, p):
+
+        self.p = p
+
+        self.width = width = p.prog_bar_width
+        self.height = height = p.prog_bar_height
+        self.position = position = p.prog_bar_position
+
+        color = p.prog_bar_color
+        linewidth = p.prog_bar_linewidth
+
+        self.full_verts = np.array([(0, 0), (0, 1),
+                                    (1, 1), (1, 0)], np.float)
+
+        frame_verts = self.full_verts.copy()
+        frame_verts[:, 0] *= width
+        frame_verts[:, 1] *= height
+        frame_verts[:, 0] -= width / 2
+        frame_verts[:, 1] += position
+
+        self.frame = visual.ShapeStim(win,
+                                      fillColor=None,
+                                      lineColor=color,
+                                      lineWidth=linewidth,
+                                      vertices=frame_verts)
+
+        self.bar = visual.ShapeStim(win,
+                                    fillColor=color,
+                                    lineColor=color,
+                                    lineWidth=linewidth)
+
+    def update_bar(self, prop):
+
+        bar_verts = self.full_verts.copy()
+        bar_verts[:, 0] *= self.width * prop
+        bar_verts[:, 1] *= self.height
+        bar_verts[:, 0] -= self.width / 2
+        bar_verts[:, 1] += self.position
+        self.bar.vertices = bar_verts
+        self.bar.setVertices(bar_verts)
+
+    def draw(self):
+
+        self.bar.draw()
+        self.frame.draw()
+
+
 class PresentationLoop(object):
     """Context manager for the main loop of an experiment."""
     def __init__(self, win, p=None, log=None, fix=None,
