@@ -164,10 +164,16 @@ class WindowInfo(object):
 
         size = minfo["size"] if params.full_screen else (800, 600)
 
+        gamma = minfo.get("gamma", None)
         monitor = calib.Monitor(minfo["name"],
                                 minfo["width"],
-                                minfo["distance"])
+                                minfo["distance"],
+                                gamma)
         monitor.setSizePix(minfo["size"])
+
+        # Currently triggers some error deep inside PsychoPy
+        #if "gamma_grid" in minfo:
+        #    monitor.setGammaGrid(minfo["gamma_grid"])
 
         info = dict(units=params.monitor_units,
                     fullscr=params.full_screen,
