@@ -164,11 +164,11 @@ class WindowInfo(object):
 
         size = minfo["size"] if params.full_screen else (800, 600)
 
-        gamma = minfo.get("gamma", None)
+        # Currently triggers some error deep inside PsychopPy
+        #gamma = minfo.get("gamma", None)
         monitor = calib.Monitor(minfo["name"],
                                 minfo["width"],
-                                minfo["distance"],
-                                gamma)
+                                minfo["distance"])
         monitor.setSizePix(minfo["size"])
 
         # Currently triggers some error deep inside PsychoPy
