@@ -185,6 +185,8 @@ class WindowInfo(object):
 
         if hasattr(params, "blend_mode"):
             info["blendMode"] = params.blend_mode
+            if params.blend_mode == "add":
+                info["useFBO"] = True
 
         if "refresh_hz" in minfo:
             self.refresh_hz = minfo["refresh_hz"]
