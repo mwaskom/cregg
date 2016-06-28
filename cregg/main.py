@@ -183,6 +183,9 @@ class WindowInfo(object):
                     size=size,
                     monitor=monitor)
 
+        if hasattr(params, "blend_mode"):
+            info["blendMode"] = params.blend_mode
+
         if "refresh_hz" in minfo:
             self.refresh_hz = minfo["refresh_hz"]
 
