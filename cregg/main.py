@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 from numpy.random import RandomState
 from psychopy import core, event, visual
-import psychopy.monitors.calibTools as calib
+from psychopy.monitors import Monitor
 from psychopy import logging
 
 
@@ -164,16 +164,18 @@ class WindowInfo(object):
 
         size = minfo["size"] if params.full_screen else (800, 600)
 
-        # Currently triggers some error deep inside PsychopPy
-        #gamma = minfo.get("gamma", None)
-        monitor = calib.Monitor(minfo["name"],
-                                minfo["width"],
-                                minfo["distance"])
+        # Currently setting gamma info triggers a PsychopPy bug
+        # See here: https://github.com/psychopy/psychopy/issues/1202
+        monitor = Monitor(name=minfo["name"],
+                          width=minfo["width"],
+                          distance=minfo["distance"],
+                          # gamma=minfo.get("gamma", None)
+                          )
         monitor.setSizePix(minfo["size"])
 
-        # Currently triggers some error deep inside PsychoPy
-        #if "gamma_grid" in minfo:
-        #    monitor.setGammaGrid(minfo["gamma_grid"])
+        # Commented out for same issue as above
+        # if "gamma_grid" in minfo:
+        #     monitor.setGammaGrid(minfo["gamma_grid"])
 
         info = dict(units=params.monitor_units,
                     fullscr=params.full_screen,
