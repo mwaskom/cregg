@@ -5,6 +5,7 @@ import os
 import sys
 import time
 import json
+import warnings
 import argparse
 import subprocess
 from glob import glob
@@ -164,18 +165,18 @@ class WindowInfo(object):
 
         size = minfo["size"] if params.full_screen else (800, 600)
 
-        # Currently setting gamma info triggers a PsychopPy bug
-        # See here: https://github.com/psychopy/psychopy/issues/1202
         monitor = Monitor(name=minfo["name"],
                           width=minfo["width"],
-                          distance=minfo["distance"],
-                          # gamma=minfo.get("gamma", None)
-                          )
+                          distance=minfo["distance"])
         monitor.setSizePix(minfo["size"])
 
-        # Commented out for same issue as above
-        # if "gamma_grid" in minfo:
-        #     monitor.setGammaGrid(minfo["gamma_grid"])
+        try:
+            if "gamma" in minfo:
+                monitor.setGamma(minfo["gamma"])
+            if "gamma_grid" in minfo:
+                monitor.setGammaGrid(minfo["gamma_grid"])
+        except AttributeError:
+            warnings.warn("Could not set monitor gamma table.")
 
         info = dict(units=params.monitor_units,
                     fullscr=params.full_screen,
