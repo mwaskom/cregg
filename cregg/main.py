@@ -547,6 +547,8 @@ def flexible_values(val, size=1, random_state=None):
     elif isinstance(val, tuple):
         rv = getattr(stats, val[0])(*val[1:])
         out = rv.rvs(size=size, random_state=random_state)
+    else:
+        raise TypeError("`val` must be scalar, set, or tuple")
 
     return out
 
