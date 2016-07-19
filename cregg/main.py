@@ -530,7 +530,7 @@ def flexible_values(val, size=1, random_state=None):
 
     Input format can be:
         - A numeric value, which will be used exactly.
-        - A set of possible values, which will be randomly chosen from.
+        - A list of possible values, which will be randomly chosen from.
         - A tuple of (dist, arg0[, arg1, ...]), which will be used to generate
           random observations from a scipy random variable.
 
@@ -542,8 +542,8 @@ def flexible_values(val, size=1, random_state=None):
         out = np.ones(size, np.array(val).dtype) * val
         if size == 1:
             out = out.item()
-    elif isinstance(val, set):
-        out = random_state.choice(list(val), size=size)
+    elif isinstance(val, list):
+        out = random_state.choice(val, size=size)
     elif isinstance(val, tuple):
         rv = getattr(stats, val[0])(*val[1:])
         out = rv.rvs(size=size, random_state=random_state)
