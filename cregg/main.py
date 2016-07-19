@@ -15,6 +15,7 @@ from subprocess import call
 from pprint import pformat
 import numpy as np
 import pandas as pd
+from scipy import stats
 from numpy.random import RandomState
 from psychopy import core, event, visual
 from psychopy.monitors import Monitor
@@ -522,6 +523,32 @@ def categorical(p, size=None):
 def flip(p=0.5):
     """Shorthand for a bernoulli sample."""
     return np.random.binomial(1, p)
+
+
+def flexible_values(val, size=1, random_state=None):
+    """Flexibly determine a number of values.
+
+    Input format can be:
+        - A numeric value, which will be used exactly.
+        - A set of possible values, which will be randomly chosen from.
+        - A tuple of (dist, arg0[, arg1, ...]), which will be used to generate
+          random observations from a scipy random variable.
+
+    """
+    if random_state is None:
+        random_state = RandomState()
+
+    if np.isscalar(val):
+        out = np.ones(size, np.array(val).dtype) * val
+        if size == 1:
+            out = out.item()
+    elif isinstance(val, set):
+        out = random_state.choice(list(val), size=size)
+    elif isinstance(val, tuple):
+        rv = getattr(stats, val[0])(*val[1:])
+        out = rv.rvs(size=size, random_state=random_state)
+
+    return out
 
 
 def load_design_csv(params):
