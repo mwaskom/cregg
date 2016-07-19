@@ -503,15 +503,36 @@ def subject_specific_state(subject, cbid=None):
     return state
 
 
-def launch_window(params):
+def launch_window(params, test_refresh=True, test_tol=.5):
     """Open up a presentation window and measure the refresh rate."""
+    # Get the monitor parameters
     m = WindowInfo(params)
+    stated_refresh_hz = getattr(m, "refresh_hz", None)
+
+    # Initialize the Psychopy window object
     win = visual.Window(**m.window_kwargs)
-    try:
-        win.refresh_hz = m.refresh_hz
-    except AttributeError:
+
+    # Record the refresh rate we are currently achieving
+    if test_refresh or stated_refresh_hz is None:
         win.setRecordFrameIntervals(True)
         logging.console.setLevel(logging.CRITICAL)
         flip_time, _, _ = visual.getMsPerFrame(win)
-        win.refresh_hz = 1000 / flip_time
+        observed_refresh_hz = 1000 / flip_time
+
+    # Possibly test the refresh rate against what we expect
+    if test_refresh and stated_refresh_hz is not None:
+        refresh_error = np.abs(stated_refresh_hz - observed_refresh_hz)
+        if refresh_error > test_tol:
+            msg = ("Observed refresh rate differs from expected by {:.3f} Hz"
+                   .format(refresh_error))
+            raise RuntimeError(msg)
+
+    # Set the refresh rate to use in the experiment
+    if stated_refresh_hz is None:
+        msg = "Monitor configuration does not have refresh rate information"
+        warnings.warn(msg)
+        win.refresh_hz = observed_refresh_hz
+    else:
+        win.refresh_hz = stated_refresh_hz
+
     return win
