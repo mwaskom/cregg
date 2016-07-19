@@ -56,6 +56,10 @@ class Params(object):
 
         return getattr(self, key)
 
+    def get(self, key, default=None):
+
+        return getattr(self, key, default)
+
     def set_by_cmdline(self, arglist):
         """Get runtime parameters off the commandline."""
         # Create the parser, set default args
@@ -356,6 +360,46 @@ class PresentationLoop(object):
             self.fileobj.close()
         if self.exit_func is not None:
             self.exit_func(self.log)
+
+
+def make_common_visual_objects(win, p):
+    """Return a dictionary with visual objects that are generally useful."""
+
+    # Fixation point
+    fix = Fixation(win, p)
+
+    # Progress bar to show during behavioral breaks
+    progress = ProgressBar(win, p)
+
+    stims = dict(fix=fix, progress=progress)
+
+    quit_keys = p.get("quit_keys", ["q", "escape"])
+    wait_keys = p.get("wait_keys", ["space"])
+    finish_keys = p.get("finish_keys", ["return"])
+
+
+    # Instructions
+    if hasattr(p, "instruct_text"):
+        instruct = WaitText(win, p.instruct_text,
+                            advance_keys=wait_keys,
+                            quit_keys=quit_keys)
+        stims["instruct"] = instruct
+
+    # Text that allows subjects to take a break between blocks
+    if hasattr(p, "break_text"):
+        take_break = WaitText(win, p.break_text,
+                              advance_keys=wait_keys,
+                              quit_keys=quit_keys)
+        stims["break"] = take_break
+
+    # Text that alerts subjects to the end of an experimental run
+    if hasattr(p, "finish_text"):
+        finish_run = WaitText(win, p.finish_text,
+                              advance_keys=finish_keys,
+                              quit_keys=quit_keys)
+        stims["finish"] = finish_run
+
+    return stims
 
 
 def archive_old_version(fname):
