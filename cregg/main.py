@@ -243,12 +243,14 @@ class Fixation(object):
     """Simple fixation point with color as a property."""
     def __init__(self, win, p):
 
+        color = p.get("fix_iti_color", "white")
+
         self.dot = visual.Circle(win, interpolate=True,
-                                 fillColor=p.fix_iti_color,
-                                 lineColor=p.fix_iti_color,
+                                 fillColor=color,
+                                 lineColor=color,
                                  size=p.fix_size)
 
-        self._color = p.fix_iti_color
+        self._color = color
 
     @property
     def color(self):
@@ -273,12 +275,12 @@ class ProgressBar(object):
 
         self.p = p
 
-        self.width = width = p.prog_bar_width
-        self.height = height = p.prog_bar_height
-        self.position = position = p.prog_bar_position
+        self.width = width = p.get("prog_bar_width", 5)
+        self.height = height = p.get("prog_bar_height", .25)
+        self.position = position = p.get("prog_bar_position", -3)
 
-        color = p.prog_bar_color
-        linewidth = p.prog_bar_linewidth
+        color = p.get("prog_bar_color", "white")
+        linewidth = p.get("prog_bar_linewidth", 2)
 
         self.full_verts = np.array([(0, 0), (0, 1),
                                     (1, 1), (1, 0)], np.float)
@@ -300,8 +302,19 @@ class ProgressBar(object):
                                     lineColor=color,
                                     lineWidth=linewidth)
 
+        self._prop_completed = 0
+
+    @property
+    def prop_completed(self):
+        return self._prop_completed
+
+    @prop_completed.setter
+    def prop_completed(self, prop):
+        self.update_bar(prop)
+
     def update_bar(self, prop):
 
+        self._prop_completed = prop
         bar_verts = self.full_verts.copy()
         bar_verts[:, 0] *= self.width * prop
         bar_verts[:, 1] *= self.height
