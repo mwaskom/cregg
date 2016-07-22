@@ -483,7 +483,8 @@ def precise_wait(win, clock, end_time, stim):
     wait_flips = np.floor((end_time - now) * win.refresh_hz)
     for _ in xrange(int(wait_flips)):
         stim.draw()
-        win.flip()
+        flip_time = win.flip()
+    return flip_time
 
 
 def wait_and_listen(listen_for, sleep_time=None):
