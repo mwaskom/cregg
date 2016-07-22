@@ -46,7 +46,10 @@ class Params(object):
         for key, val in param_dict.iteritems():
             setattr(self, key, val)
 
-        self.time = time.asctime()
+        timestamp = time.localtime()
+        self.timestamp = timestamp
+        self.date = time.strftime("%Y-%m-%d", timestamp)
+        self.time = time.strftime("%H-%M-%S", timestamp)
         self.git_hash = git_hash()
 
     def __repr__(self):
@@ -133,7 +136,8 @@ class DataLog(object):
     def init_log(self, p):
 
         # Figure out the name and clear out old files
-        fname_base = p.log_base.format(subject=p.subject, run=p.run)
+        kws = dict(subject=p.subject, date=p.date, time=p.time, run=p.run)
+        fname_base = p.log_base.format(**kws)
         self.fname = fname_base + ".csv"
         archive_old_version(self.fname)
 
