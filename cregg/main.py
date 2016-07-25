@@ -481,11 +481,11 @@ def precise_wait(win, clock, end_time, stim):
     """Wait with precision controlled by screen refreshes."""
     now = clock.getTime()
     wait_flips = np.floor((end_time - now) * win.refresh_hz)
-    flip_time = now
     for _ in xrange(int(wait_flips)):
         stim.draw()
-        flip_time = win.flip()
-    return flip_time
+        win.flip()
+    now = clock.getTime()
+    return now 
 
 
 def wait_and_listen(listen_for, sleep_time=None):
