@@ -47,7 +47,7 @@ class Params(object):
             setattr(self, key, val)
 
         timestamp = time.localtime()
-        self.timestamp = timestamp
+        self.timestamp = time.asctime(timestamp)
         self.date = time.strftime("%Y-%m-%d", timestamp)
         self.time = time.strftime("%H-%M-%S", timestamp)
         self.git_hash = git_hash()
