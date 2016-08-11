@@ -446,16 +446,17 @@ def check_quit(quit_keys=["q", "escape"]):
     event.clearEvents()
 
 
-def wait_check_quit(wait_time, quit_keys=None):
-    """Wait a given time, checking for a quit every second."""
-    if quit_keys is None:
-        quit_keys = ["q", "escape"]
-    for sec in range(int(floor(wait_time))):
-        core.wait(1)
+def wait_check_quit(wait_time, quit_keys=["q", "escape"], check_every=1):
+    """Wait a given time, checking for a quit periodically."""
+    checks = int(floor(wait_time / check_every))
+    for _ in range(checks):
+        core.wait(check_every)
         check_quit(quit_keys)
-    remaining = wait_time - floor(wait_time)
+
+    remaining = wait_time - checks * check_every
     if remaining:
         core.wait(remaining)
+
     event.clearEvents()
 
 
