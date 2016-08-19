@@ -438,11 +438,9 @@ def max_brightness(monitor):
 
 def check_quit(quit_keys=["q", "escape"]):
     """Check if we got a quit key signal and exit if so."""
-    keys = event.getKeys(keyList=quit_keys)
-    for key in keys:
-        if key in quit_keys:
-            print "Subject quit execution"
-            core.quit()
+    if event.getKeys(keyList=quit_keys):
+        print "Subject quit execution"
+        core.quit()
     event.clearEvents()
 
 
@@ -458,6 +456,39 @@ def wait_check_quit(wait_time, quit_keys=["q", "escape"], check_every=1):
         core.wait(remaining)
 
     event.clearEvents()
+
+
+def wait_check_pause_quit(win, wait_time, quit_keys=["q", "escape"],
+                          pause_keys=["space"], check_every=1):
+    """Wait while checking for pause or quit input."""
+    raise NotImplementedError("This isn't quite finished yet")
+    checks = int(floor(wait_time / check_every))
+    for _ in range(checks):
+
+        core.wait(check_every)
+
+        if event.getKeys(keyList=quit_keys):
+            print "Subject quit execution"
+            core.quit()
+
+        if event.getKeys(keyList=pause_keys):
+
+            pause_start = time.time()
+            visual.TextStim(win, text="Experiment paused").draw()
+            win.flip()
+            paused = True
+            while paused:
+                if event.getKeys(keyList=pause_keys):
+                    paused = False
+                core.sleep(check_every)
+            pause_end = time.time()
+
+    pause_duration = pause_end - pause_start
+    remaining = wait_time - checks * check_every
+    if remaining:
+        core.wait(remaining)
+
+    return pause_duration
 
 
 def wait_for_trigger(win, params):
