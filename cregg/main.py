@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 from numpy.random import RandomState
-from psychopy import core, event, visual
+from psychopy import core, event, visual, sound
 from psychopy.monitors import Monitor
 from psychopy import logging
 
@@ -367,6 +367,29 @@ class PresentationLoop(object):
             self.exit_func(self.log)
 
 
+class AuditoryFeedback(object):
+
+    def __init__(self, correct="ding", wrong="signon", noresp="click"):
+
+        sound_dir = os.path.join(os.path.dirname(__file__), "sounds")
+        sound_name_dict = dict(correct=correct, wrong=wrong, noresp=noresp)
+        sound_dict = {}
+        for event, sound_type in sound_name_dict.items():
+            if sound is None:
+                sound_dict[event] = None
+            else:
+                fname = os.path.join(sound_dir, sound_type + ".wav")
+                sound_obj = sound.Sound(fname)
+                sound_dict[event] = sound_obj
+        self.sound_dict = sound_dict
+
+    def __call__(self, event):
+
+        sound_obj = self.sound_dict[event]
+        if sound_obj is not None:
+            sound_obj.play()
+
+
 def make_common_visual_objects(win, p):
     """Return a dictionary with visual objects that are generally useful."""
 
@@ -381,7 +404,6 @@ def make_common_visual_objects(win, p):
     quit_keys = p.get("quit_keys", ["q", "escape"])
     wait_keys = p.get("wait_keys", ["space"])
     finish_keys = p.get("finish_keys", ["return"])
-
 
     # Instructions
     if hasattr(p, "instruct_text"):
@@ -517,7 +539,7 @@ def precise_wait(win, clock, end_time, stim):
         stim.draw()
         win.flip()
     now = clock.getTime()
-    return now 
+    return now
 
 
 def wait_and_listen(listen_for, sleep_time=None):

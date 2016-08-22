@@ -29,5 +29,8 @@ if __name__ == "__main__":
         license=LICENSE,
         version=VERSION,
         download_url=DOWNLOAD_URL,
+        zip_safe=False,
         packages=["cregg", "cregg.tests"],
+        package_dir={"cregg": "cregg"},
+        package_data={"cregg": ["sounds/*.wav"]},
     )
