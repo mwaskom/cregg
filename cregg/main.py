@@ -341,7 +341,7 @@ class ProgressBar(object):
 class PresentationLoop(object):
     """Context manager for the main loop of an experiment."""
     def __init__(self, win, p=None, log=None, fix=None,
-                 exit_func=None, fileobj=None):
+                 exit_func=None, fileobj=None, tracker=None):
 
         self.p = p
         self.win = win
@@ -349,6 +349,7 @@ class PresentationLoop(object):
         self.log = log
         self.exit_func = exit_func
         self.fileobj = fileobj
+        self.tracker = None
 
     def __enter__(self):
 
@@ -361,6 +362,14 @@ class PresentationLoop(object):
     def __exit__(self, type, value, traceback):
 
         self.win.close()
+        if self.tracker is not None:
+            try:
+                self.tracker.setRecordingState(False)
+                self.tracker.setConnectionState(False)
+            except AttributeError:
+                # i.e. if tracker is a mouse
+                # TODO handle this better with an abstract class
+                pass
         if self.fileobj is not None:
             self.fileobj.close()
         if self.exit_func is not None:
