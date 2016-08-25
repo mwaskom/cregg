@@ -250,10 +250,10 @@ class WaitText(object):
 
 class Fixation(object):
     """Simple fixation point with color as a property."""
-    def __init__(self, win, p):
+    def __init__(self, win, p, color="white"):
 
-        color = p.get("fix_iti_color", "white")
-
+        color = p.get("fix_iti_color", color)
+        self.win = win
         self.dot = visual.Circle(win, interpolate=True,
                                  fillColor=color,
                                  lineColor=color,
@@ -268,6 +268,9 @@ class Fixation(object):
 
     @color.setter  # pylint: disable-msg=E0102r
     def color(self, color):
+
+        if color is None:
+            color = self.win.color
 
         self._color = color
         self.dot.setFillColor(color)
