@@ -352,7 +352,7 @@ class PresentationLoop(object):
         self.log = log
         self.exit_func = exit_func
         self.fileobj = fileobj
-        self.tracker = None
+        self.tracker = tracker
 
     def __enter__(self):
 
