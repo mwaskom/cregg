@@ -344,7 +344,7 @@ class ProgressBar(object):
 class PresentationLoop(object):
     """Context manager for the main loop of an experiment."""
     def __init__(self, win, p=None, log=None, fix=None,
-                 exit_func=None, fileobj=None):
+                 exit_func=None, fileobj=None, tracker=None):
 
         self.p = p
         self.win = win
@@ -352,6 +352,7 @@ class PresentationLoop(object):
         self.log = log
         self.exit_func = exit_func
         self.fileobj = fileobj
+        self.tracker = tracker
 
     def __enter__(self):
 
@@ -366,6 +367,8 @@ class PresentationLoop(object):
         self.win.close()
         if self.fileobj is not None:
             self.fileobj.close()
+        if self.tracker is not None:
+            self.tracker.shutdown()
         if self.exit_func is not None:
             self.exit_func(self.log)
 
