@@ -344,13 +344,15 @@ class ProgressBar(object):
 class PresentationLoop(object):
     """Context manager for the main loop of an experiment."""
     def __init__(self, win, p=None, log=None, fix=None,
-                 exit_func=None, fileobj=None, tracker=None):
+                 exit_func=None, feedback_func=None,
+                 fileobj=None, tracker=None):
 
         self.p = p
         self.win = win
         self.fix = fix
         self.log = log
         self.exit_func = exit_func
+        self.feedback_func = feedback_func
         self.fileobj = fileobj
         self.tracker = tracker
 
@@ -364,13 +366,15 @@ class PresentationLoop(object):
 
     def __exit__(self, type, value, traceback):
 
-        self.win.close()
         if self.fileobj is not None:
             self.fileobj.close()
         if self.tracker is not None:
             self.tracker.shutdown()
+        if self.feedback_func is not None:
+            self.feedback_func(self.win, self.p, self.log)
         if self.exit_func is not None:
             self.exit_func(self.log)
+        self.win.close()
 
 
 class AuditoryFeedback(object):
