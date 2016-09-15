@@ -180,17 +180,18 @@ class WindowInfo(object):
         monitor.setSizePix(minfo["size"])
 
         try:
-            if "gamma" in minfo:
-                monitor.setGamma(minfo["gamma"])
-            if "gamma_grid" in minfo:
-                monitor.setGammaGrid(minfo["gamma_grid"])
+            monitor.setGamma(minfo["gamma"])
         except AttributeError:
             warnings.warn("Could not set monitor gamma table.")
+
+        # Convert from cd/m^2 to psychopy rgb color
+        # Note that this ignores the min luminance of the monitor
+        window_color = params.mean_luminance / minfo["max_luminance"] * 2 - 1
 
         info = dict(units=params.monitor_units,
                     fullscr=params.full_screen,
                     allowGUI=not params.full_screen,
-                    color=params.window_color,
+                    color=window_color,
                     screen=params.screen_number,
                     size=size,
                     monitor=monitor)
