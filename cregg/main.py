@@ -611,8 +611,6 @@ def flexible_values(val, size=1, random_state=None):
 
     if np.isscalar(val):
         out = np.ones(size, np.array(val).dtype) * val
-        if size == 1:
-            out = out.item()
     elif isinstance(val, list):
         out = random_state.choice(val, size=size)
     elif isinstance(val, tuple):
@@ -620,6 +618,9 @@ def flexible_values(val, size=1, random_state=None):
         out = rv.rvs(size=size, random_state=random_state)
     else:
         raise TypeError("`val` must be scalar, set, or tuple")
+
+    if size == 1:
+        out = out.item()
 
     return out
 
