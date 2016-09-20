@@ -5,6 +5,7 @@ import os
 import sys
 import time
 import json
+import socket
 import warnings
 import argparse
 import subprocess
@@ -623,6 +624,18 @@ def flexible_values(val, size=1, random_state=None):
         out = out.item()
 
     return out
+
+
+def send_trial_data(p, t_info, raise_on_error=False):
+    """Send a json-ized series of data over a tcp/ip socket."""
+    json_data = t_info.to_json() + "__endmsg__"
+    try:
+        s = socket.socket()
+        s.connect((p.client_host, p.client_port))
+        s.send(json_data)
+    except socket.error:
+        if raise_on_error:
+            raise
 
 
 def load_design_csv(params):
