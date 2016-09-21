@@ -30,7 +30,7 @@ class Params(object):
     others can be set from the command line.
 
     """
-    def __init__(self, exp_name, p_file='params'):
+    def __init__(self, mode, p_file='params'):
         """Initializer for the params object.
 
         Parameters
@@ -40,10 +40,10 @@ class Params(object):
         p_file: string, the name of a parameter file
 
         """
-        self.exp_name = exp_name
+        self.mode = mode
         im = __import__(p_file)
         self.param_module = im
-        param_dict = getattr(im, exp_name)
+        param_dict = getattr(im, mode)
         for key, val in param_dict.iteritems():
             setattr(self, key, val)
 
@@ -52,6 +52,13 @@ class Params(object):
         self.date = time.strftime("%Y-%m-%d", timestamp)
         self.time = time.strftime("%H-%M-%S", timestamp)
         self.git_hash = git_hash()
+
+        kws = dict(subject=self.subject,
+                   mode=self.mode,
+                   date=self.date,
+                   time=self.time,
+                   run=self.run)
+        self.log_stem = self.log_template.format(**kws)
 
     def __repr__(self):
 
@@ -134,16 +141,16 @@ class DataLog(object):
         if not p.nolog:
             self.init_log(p)
 
-    def init_log(self, p):
+    def init_log(self, p, name_stem=None):
 
         # Figure out the name and clear out old files
-        kws = dict(subject=p.subject, date=p.date, time=p.time, run=p.run)
-        fname_base = p.log_base.format(**kws)
-        self.fname = fname_base + ".csv"
+        if name_stem is None:
+            name_stem = p.log_stem
+        self.fname = name_stem + ".csv"
         archive_old_version(self.fname)
 
         # Save the parameters to json with a similar base filename
-        p.to_json(fname_base)
+        p.to_json(name_stem)
 
         # Write the column header
         column_string = ",".join(map(str, self.columns)) + "\n"
