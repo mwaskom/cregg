@@ -53,13 +53,6 @@ class Params(object):
         self.time = time.strftime("%H-%M-%S", timestamp)
         self.git_hash = git_hash()
 
-        kws = dict(subject=self.subject,
-                   mode=self.mode,
-                   date=self.date,
-                   time=self.time,
-                   run=self.run)
-        self.log_stem = self.log_template.format(**kws)
-
     def __repr__(self):
 
         return pformat(self.__dict__)
@@ -100,9 +93,6 @@ class Params(object):
         if self.debug:
             self.full_screen = False
 
-        if hasattr(self, "dummy_trs") and not self.fmri:
-            self.dummy_trs = 1
-
         if self.fmri and hasattr(self, "fmri_monitor_name"):
             self.monitor_name = self.fmri_monitor_name
 
@@ -111,6 +101,13 @@ class Params(object):
 
         if self.fmri and hasattr(self, "fmri_resp_keys"):
             self.resp_keys = self.fmri_resp_keys
+
+        kws = dict(subject=self.subject,
+                   mode=self.mode,
+                   date=self.date,
+                   time=self.time,
+                   run=self.run)
+        self.log_stem = self.log_template.format(**kws)
 
     def to_text_header(self, fid):
         """Save the parameters to a text file."""
