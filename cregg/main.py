@@ -102,6 +102,8 @@ class Params(object):
         if self.fmri and hasattr(self, "fmri_resp_keys"):
             self.resp_keys = self.fmri_resp_keys
 
+        # Build the log file stem with information we now have
+        # TODO Perhaps do this in a property in case this isn't called
         kws = dict(subject=self.subject,
                    mode=self.mode,
                    date=self.date,
@@ -601,7 +603,7 @@ def flip(p=0.5):
     return np.random.binomial(1, p)
 
 
-def flexible_values(val, size=1, random_state=None):
+def flexible_values(val, size=1, random_state=None, min=-np.inf, max=np.inf):
     """Flexibly determine a number of values.
 
     Input format can be:
@@ -620,7 +622,7 @@ def flexible_values(val, size=1, random_state=None):
         out = random_state.choice(val, size=size)
     elif isinstance(val, tuple):
         rv = getattr(stats, val[0])(*val[1:])
-        out = rv.rvs(size=size, random_state=random_state)
+        out = truncated_sample(rv, size, min, max, random_state=random_state)
     else:
         raise TypeError("`val` must be scalar, set, or tuple")
 
@@ -628,6 +630,15 @@ def flexible_values(val, size=1, random_state=None):
         out = out.item()
 
     return out
+
+
+def truncated_sample(rv, size=1, min=-np.inf, max=np.inf, **kws):
+    out = np.empty(np.prod(size))
+    replace = np.ones(np.prod(size), np.bool)
+    while replace.any():
+        out[replace] = rv.rvs(replace.sum(), **kws)
+        replace = (out < min) | (out > max)
+    return out.reshape(size)
 
 
 def send_trial_data(p, t_info, raise_on_error=False):
