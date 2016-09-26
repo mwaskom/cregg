@@ -393,7 +393,11 @@ class AuditoryFeedback(object):
         # TODO cleaner to do a more abstract feedback object
         self.play_sounds = True
         sound_dir = os.path.join(os.path.dirname(__file__), "sounds")
-        sound_name_dict = dict(correct=correct, wrong=wrong, noresp=noresp)
+        sound_name_dict = dict(correct=correct,
+                               wrong=wrong,
+                               noresp=noresp,
+                               fixbreak=fixbreak,
+                               nofix=nofix)
         sound_dict = {}
         for event, sound_type in sound_name_dict.items():
             if sound is None:
