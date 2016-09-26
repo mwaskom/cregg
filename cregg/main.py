@@ -387,7 +387,8 @@ class PresentationLoop(object):
 
 class AuditoryFeedback(object):
 
-    def __init__(self, correct="ding", wrong="signon", noresp="click"):
+    def __init__(self, correct="ding", wrong="signon",
+                 noresp="click", fixbreak="click", nofix="secalert"):
 
         sound_dir = os.path.join(os.path.dirname(__file__), "sounds")
         sound_name_dict = dict(correct=correct, wrong=wrong, noresp=noresp)
