@@ -195,11 +195,12 @@ class WindowInfo(object):
         # Note that this ignores the min luminance of the monitor
         window_color = params.mean_luminance / minfo["max_luminance"] * 2 - 1
 
-        info = dict(units=params.monitor_units,
-                    fullscr=params.full_screen,
-                    allowGUI=not params.full_screen,
+        fullscreen = params.get("full_screen", True)
+        info = dict(units=params.get("monitor_units", "deg"),
+                    screen=params.get("screen", 0),
+                    fullscr=fullscreen,
+                    allowGUI=not fullscreen,
                     color=window_color,
-                    screen=params.screen_number,
                     size=size,
                     monitor=monitor)
 
