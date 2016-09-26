@@ -387,9 +387,11 @@ class PresentationLoop(object):
 
 class AuditoryFeedback(object):
 
-    def __init__(self, correct="ding", wrong="signon",
+    def __init__(self, play_sounds=True, correct="ding", wrong="signon",
                  noresp="click", fixbreak="click", nofix="secalert"):
 
+        # TODO cleaner to do a more abstract feedback object
+        self.play_sounds = True
         sound_dir = os.path.join(os.path.dirname(__file__), "sounds")
         sound_name_dict = dict(correct=correct, wrong=wrong, noresp=noresp)
         sound_dict = {}
@@ -404,9 +406,10 @@ class AuditoryFeedback(object):
 
     def __call__(self, event):
 
-        sound_obj = self.sound_dict[event]
-        if sound_obj is not None:
-            sound_obj.play()
+        if self.play_sounds:
+            sound_obj = self.sound_dict[event]
+            if sound_obj is not None:
+                sound_obj.play()
 
 
 def make_common_visual_objects(win, p):
