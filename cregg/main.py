@@ -381,7 +381,7 @@ class PresentationLoop(object):
         if self.feedback_func is not None:
             self.feedback_func(self.win, self.p, self.log)
         if self.exit_func is not None:
-            self.exit_func(self.log)
+            self.exit_func(self.p, self.log)
         self.win.close()
 
 
