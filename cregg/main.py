@@ -101,6 +101,8 @@ class Params(object):
 
         if self.fmri and hasattr(self, "fmri_resp_keys"):
             self.resp_keys = self.fmri_resp_keys
+                    fullscr=fullscreen,
+                    allowGUI=not fullscreen,
 
         # Build the log file stem with information we now have
         # TODO Perhaps do this in a property in case this isn't called
@@ -179,7 +181,8 @@ class WindowInfo(object):
         except IndexError:
             sys.exit("Monitor not found in monitors.py")
 
-        size = minfo["size"] if params.full_screen else (800, 600)
+        fullscreen = params.get("full_screen", True)
+        size = minfo["size"] if fullscreen else (800, 600)
 
         monitor = Monitor(name=minfo["name"],
                           width=minfo["width"],
@@ -195,7 +198,6 @@ class WindowInfo(object):
         # Note that this ignores the min luminance of the monitor
         window_color = params.mean_luminance / minfo["max_luminance"] * 2 - 1
 
-        fullscreen = params.get("full_screen", True)
         info = dict(units=params.get("monitor_units", "deg"),
                     screen=params.get("screen", 0),
                     fullscr=fullscreen,
