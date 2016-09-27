@@ -101,8 +101,6 @@ class Params(object):
 
         if self.fmri and hasattr(self, "fmri_resp_keys"):
             self.resp_keys = self.fmri_resp_keys
-                    fullscr=fullscreen,
-                    allowGUI=not fullscreen,
 
         # Build the log file stem with information we now have
         # TODO Perhaps do this in a property in case this isn't called
