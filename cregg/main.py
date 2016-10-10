@@ -382,6 +382,7 @@ class PresentationLoop(object):
 
     def __exit__(self, type, value, traceback):
 
+        self.win.flip()
         if self.fileobj is not None:
             self.fileobj.close()
         if self.tracker is not None:
