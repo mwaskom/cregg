@@ -196,13 +196,20 @@ class WindowInfo(object):
         # Note that this ignores the min luminance of the monitor
         window_color = params.mean_luminance / minfo["max_luminance"] * 2 - 1
 
+        # Allow for horizontal mirror view of the whole window
+        if params.fmri and params.get("fmri_mirror_horizontal", False):
+            viewscale = [-1, 1]
+        else:
+            viewscale = [1, 1]
+
         info = dict(units=params.get("monitor_units", "deg"),
                     screen=params.get("screen", 0),
                     fullscr=fullscreen,
                     allowGUI=not fullscreen,
                     color=window_color,
                     size=size,
-                    monitor=monitor)
+                    monitor=monitor,
+                    viewScale=viewscale)
 
         if hasattr(params, "blend_mode"):
             info["blendMode"] = params.blend_mode
